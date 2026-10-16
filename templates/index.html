@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vendor Risk Screener · local-first contract risk reviewer</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">⚖️</span>
+      <div>
+        <h1>Vendor Risk Screener</h1>
+        <p class="tagline">Local-first buyer-side contract redliner. Paste an MSA, DPA, SaaS terms, or vendor SOW → get a 0-100 buyer-friendliness score, 40+ clause risk flags, and negotiation language.</p>
+      </div>
+    </div>
+    <div class="meta-right">
+      <span class="pill pill-domain" id="vendorTypePill">Vendor: —</span>
+      <span class="pill pill-value" id="valuePill">Value: —</span>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="panel" id="briefPanel">
+      <h2>1 · Paste the contract</h2>
+      <div class="row">
+        <label class="field">
+          <span>Vendor type <small>(informational — adjusts axis weights)</small></span>
+          <select id="vendorType">
+            <option value="">— select —</option>
+            <option value="saas">SaaS / cloud</option>
+            <option value="data">Data / analytics vendor</option>
+            <option value="consulting">Consulting / agency</option>
+            <option value="managed_services">Managed services / MSP</option>
+            <option value="logistics">Logistics / supplier</option>
+            <option value="other">Other</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Contract value band</span>
+          <select id="valueBand">
+            <option value="">— select —</option>
+            <option value="small">Under $25K</option>
+            <option value="medium">$25K – $250K</option>
+            <option value="large">$250K – $1M</option>
+            <option value="high_value">Over $1M (enterprise)</option>
+          </select>
+        </label>
+      </div>
+      <label class="field">
+        <span>Free-form brief <small>(e.g. "SaaS analytics subscription, 2-year term, processes customer PII including EU residents")</small></span>
+        <textarea id="brief" rows="2" placeholder="What kind of vendor is this, what's at stake, anything we should weight heavily?"></textarea>
+      </label>
+      <label class="field">
+        <span>Contract text <small>(paste the MSA / DPA / order form / terms — minimum 200 chars)</small></span>
+        <textarea id="contractText" rows="14" placeholder="Paste the full contract text here, including any attached DPA, SOW, or order form. The more you paste, the more clauses we'll catch."></textarea>
+      </label>
+      <div class="actions">
+        <button class="btn btn-primary" id="analyzeBtn">Analyze contract</button>
+        <button class="btn btn-ghost" id="sampleBtn">Load buyer-hostile sample</button>
+        <span class="char-count" id="charCount">0 chars</span>
+      </div>
+    </section>
+
+    <section class="panel hidden" id="resultPanel">
+      <div class="result-header">
+        <div>
+          <h2>2 · Buyer-friendliness verdict</h2>
+          <p class="muted">Higher = better for the buyer. Lower = the vendor's terms got you.</p>
+        </div>
+        <div class="score-card" id="scoreCard">
+          <div class="score-number" id="scoreNumber">—</div>
+          <div class="score-band" id="scoreBand">—</div>
+          <div class="score-meta" id="scoreMeta">—</div>
+        </div>
+      </div>
+
+      <div class="axis-grid" id="axisGrid"></div>
+
+      <h3>Risk summary</h3>
+      <div class="risk-grid" id="riskGrid"></div>
+
+      <h3>Top 3 negotiation asks</h3>
+      <ol class="top-fixes" id="topFixes"></ol>
+
+      <h3>Clause-by-clause findings</h3>
+      <div class="filter-row">
+        <label class="filter-chip">
+          <input type="checkbox" value="missing" checked /> missing
+        </label>
+        <label class="filter-chip">
+          <input type="checkbox" value="buyer_hostile" checked /> buyer-hostile
+        </label>
+        <label class="filter-chip">
+          <input type="checkbox" value="present_neutral" checked /> ambiguous
+        </label>
+        <label class="filter-chip">
+          <input type="checkbox" value="buyer_friendly" checked /> buyer-friendly
+        </label>
+        <select id="axisOnly">
+          <option value="">all axes</option>
+          <option value="data_governance">data governance</option>
+          <option value="commercial">commercial</option>
+          <option value="liability">liability</option>
+          <option value="operational">operational</option>
+          <option value="exit">exit</option>
+          <option value="governance">governance</option>
+        </select>
+      </div>
+      <div id="findings"></div>
+    </section>
+
+    <section class="panel" id="historyPanel">
+      <h2>Recent contracts analyzed</h2>
+      <p class="muted">Click any row to reload that contract's analysis. Update self-rating + notes inline.</p>
+      <div id="historyList" class="history-list">
+        <p class="muted">No history yet — analyze your first contract above.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Vendor Risk Screener · Flask + SQLite + vanilla JS · zero API keys · fully local</p>
+    <p>Buyer-perspective contract review. Not a substitute for qualified legal counsel — use as a triage tool before sending redlines to counsel.</p>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
